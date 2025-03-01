@@ -1,32 +1,3 @@
-# BrainStation Data Science Capstone Template
-
-This is a template repository for setting up your capstone project: it includes a simple folder structure and placeholder files for the most important assets you will be creating.
-
-## Usage
-
-3. Update your `README.md` file to reflect the project - see a sample structure below and please refer to Synapse on what needs to be included here. 
-4. Set up and activate your conda environment:
-    - Create a new `conda` environment for your capstone project.
-    - Activate the environment and export:
-        ```bash
-        conda env export > conda.yml
-        ```
-    - Make sure re-export every time after you update the environment.
-    - You can reset your conda environment by running:
-        ```bash
-        conda env create -f conda.yml
-        conda activate <your-env-name>
-        ```
-5. Add your own notebooks in `./notebooks/` and remove placeholders.
-6. Add your own data in `./data/` and remove placeholder. Note: `.gitignore` will ignore the data folder when you push to github, save a copy of your raw and processed data, pickled models in a Google Drive folder and add the link in the `data_links.md` file.
-7. Add your project documents, figures, reports, presentation pdf's in the `./docs` and remove placeholders.
-8. Add your references (tutorials, papers, books etc.) in `./references`. 
-9. Add your own scripts in `./src/` and remove unnecessary folders.
-
-Feel free to rename the folder and customize the project structure to best fit your work - this template is just the starting point.
-
-------------------------------------------------------------------------------
-
 # Hotel Demand and Cancellation Forecast
 =========================
 
