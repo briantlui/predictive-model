@@ -26,8 +26,8 @@ I have identified two datasets that share the same source. The Science Direct da
 
 
 ### Methodology<br>
-I would first start with linear regression models for any variables I’ve identified to have a linear relationship to either cancellation or demand. 
-If the linear regression models prove inconclusive or unsuccessful, then I would move onto testing more advanced models like decision trees or random forests
+I would first start with classification models like logistic regression to predict my first target variable (is_canceled). Next I would explore additional classification models (Random Forest, XGBoost) to compare the performance of these models with the baseline logistic regression model. Next I would explore demand using time series forecasting to predict demand.  Once both the time series forecast is complete, I would encorporate both models together to predict a daily occupancy using the test set.
+
 
 ### Data Dictionary
 
@@ -75,6 +75,10 @@ If the linear regression models prove inconclusive or unsuccessful, then I would
 * `data` 
     - contains link to copy of the dataset (stored in a publicly accessible cloud storage)
     - saved copy of aggregated / processed data as long as those are not too large (> 10 MB)
+        - clean_df
+        - cxl_by_date
+        - demand_by_date
+        - rf_fitted_search.pkl
 
 * `model`
     - `joblib` dump of final model(s)
