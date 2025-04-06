@@ -1,3 +1,6 @@
 *.csv
 *.xlsx
 *.tgn
+*.DS_Store
+*Archive
+*submissions
