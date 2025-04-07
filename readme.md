@@ -32,6 +32,8 @@ I've worked in the hotel revenue management discipline for over 14 years. In my 
 **The Data**<br>
 I have identified two datasets that share the same source. The Science Direct dataset was shared in 2019 and the kaggle dataset took this data and cleaned it for “#TidyTuesday” in 2020. The data contains booking information for 2 hotels, a city hotel and a resort hotel. It provides reservation information such as: booking dates, arrival dates, number of adults/children, market segment, and if the reservation was cancelled or changed.
 
+There data consisted of 119,390 reservations
+
 
 # Project Flow: 
 
@@ -45,6 +47,9 @@ My Project is organized into 4 mains sections and 1 "side quest" (Spoilers inclu
 - After my initial iteration of baseline modeling, I returned to preprocessing to correct leakage that caused overfitting due to the reservation_status and reservation_status_date columns. Essentially, reservation_status contains data on if the reservation would ultimately be cancelled, no showed, or checked out.  Another discovery I identified was that when the arrival_date and reservation_status_date were both included, overfitting/leakage would occur because any reservations that cancelled would have a reservation status day BEFORE the arrival_date.  Whereas any reservation that checked out, would have the opposite, the reservation_status_date would be AFTER the arrival_date.  Both of these were addressed before proceeding to the next modeling phase.
 ## 3. Modeling
 - In the modeling section, I addressed the class imbalance by applying SMOTE to the training data. Side note(And prior to handling this class imbalance, my baseline models were severely overfitted and have train accuracies and precision scores of nearly 100%.  My models were too perfect...which led me to handing class imbalance.)
+
+![Percentage of reservations by Hotel](/references/Percent%20of%20Cancelled%20Pie.png)
+
 - I first ran the baseline models for Logistic Regression, Random Forest, and XGBoost models. Then added hyperparameters via manual hyperparameter optimization and grid search in hopes of finding the best performing model.
 - For logistic regression, optimizing the C value did not produce significant results. When applying principal component analysis to reduce dimensionality, I noticed that the accuracy and f1-scores also did not improve.
 - For random forest, by manually optimizing hyperparameters, I was able to significantly decrease the overfitting. The train vs. test score accuracy difference decreased from 14% to less than 1%.  However, there was a 10% drop in the f1-score (with a 13% decrease in Recall). But when combining my manual optimization with grid search, I achieved a 3rd random forest model that maintained minimal overfitting and a 2% increase in f-1 score compared to my previous model run.
@@ -88,6 +93,8 @@ Next Steps:
 - Explore Demand
     - I feel like this is only half of the journey. I ultimately want to continue uncovering what's under the hood of a revenue management system to better understand the revenue management products I've been helping build these last 5 years as a product owner.
     - I want to explore predicting demand using statistical time series models such as ARMA and SARIMA, however these would only focus on the target variable (demand) with no features. So I would also explore other Machine Learnings models such as Linear Regression and XGBoost as well.
+ (Preview of my next adventures!)
+![Weekly Demand Over Time](/references/Weekly%20Demand%20Over%20Time.png)
 
 ### Data Dictionary
 
