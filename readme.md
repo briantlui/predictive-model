@@ -60,9 +60,19 @@ My Project is organized into 4 mains sections and 1 "side quest" (Spoilers inclu
 - Recall: Of all the cancelled reservations (8581), the model correctly predicted 5764 reservations correctly
 - Precision: Out of the 7316 reservations the model said were going to cancel, 5764 reservations actually cancelled?
 
-- I further explored these errors in the model using box plot distributions and the most insightful feature I discovered that the model struggles with is lead time. The model’s average of true positives (accurately predicting a cancellation) were above 100 days, whereas the model’s average false positives (predicting a cancellation, but the reservation did not cancel) was below 100 days. This suggests that the model may struggle with reservations that have shorter lead times.
+- I further explored these errors in the model using box plot distributions and the most insightful feature I discovered that the model struggles with is lead time. The model’s average of true positives (accurately predicting a cancellation) were above 100 days, whereas the model’s average false positives (predicting a cancellation, but the reservation did not cancel) was below 100 days. This suggests that the model may struggle with reservations that have shorter lead times. *(See distribution plot below)*
 
 ![Lead Time Distribution by Confusion Matrix Label](/references/Error%20Analysis%20-%20Lead%20Time.png)
+
+
+- I attempted to run Shapley values on the random forest model as well, however due to computational limitations with the model type and depth of trees, I substituted with the XGBoost model. This will provide similar results to my random forest model as the top 4 most important features were the same, just in a different order.
+
+- When diving deeper into dependency plots of the SHAP values, I noticed the lead time’s pattern the most, where the shorter the lead time, the less likely the reservations are going to cancel. One interesting discovery I found over, is that between the 2 arrival features (Arrival Date Week Number and Arrival Month), they displayed inverse SHAP values. I would expect both of them to share a similar trend.  To investigate this further, I would evaluate additional possible overfitting or investigate my model complexity as the model may be focusing too much on individual weeks vs. the broader monthly patterns and trends. *(See SHAP dependency plots below)*
+
+![SHAP Arrival Week Number](/references/SHAP_arrival_date_week_number.png)
+
+![SHAP Arrival Month](/references/SHAP_arrival_month.png)
+
 
 ## 5. Side Quests
 - The purpose of this last section was to keep the side quests and dead-ends that I ran into during my project. The biggest side quests in this notebook is running baseline models on the overfitted and umbalanced data. I progressed through the each model attempting multiple iterations in attemps to fix the overfitting and "make the models less perfect".  Ultimately, when I discovered the leakage that `reservation_status` and `reservation_status_date` columns brought to my data, I discontinued this work.  However, I wanted to keep this as an appendix if you want to see the side quests and problem solving I attempted in my earlier iteration.
