@@ -55,6 +55,15 @@ My Project is organized into 4 mains sections and 1 "side quest" (Spoilers inclu
 - The metrics that I evaluated were using classification reports to evaluate accuracy, precision, recall, and f-1 scores. I also reviewed ROC curves to calculate the Area under the Curve (AUC) scores for each model to evaluate the model overall. 
 - After selecting the “best” model, I continued model evaluation with a confusion matrix to identify True Positives, False Positives, True Negatives, and False Negatives. This helped identify where the model performs well and incorrectly predicts cancellations. 
 - Lastly I evaluated which features are most impactful to the model and what the model believes to be the driving factors to predicting if a reservation will cancel or not.
+- I ultimately chose the Random Forest model because it is only marginally lower in accuracy by 4%, AUC by ~3%, and F1-score by 4%.  The largest difference is that the random forest model is 4% lower in recall compared to the XGBoost model. However, it has less overfitting and suggests that it will likely perform more consistently on new data. A model that has higher overfitting is tailoring itself too closely to the training data and therefore may not perform as well on unseen data. This could lead to unreliable predictions.
+- When evaluating the confusion matrix, I found that out of the 8500 total reservations that cancelled, the model predicted 1500 reservations to cancel, but they actually did not cancel. And the model predicted 2800 reservations would not cancel, but they actually did cancel.
+- Recall: Of all the cancelled reservations (8581), the model correctly predicted 5764 reservations correctly
+- Precision: Out of the 7316 reservations the model said were going to cancel, 5764 reservations actually cancelled?
+
+- I further explored these errors in the model using box plot distributions and the most insightful feature I discovered that the model struggles with is lead time. The model’s average of true positives (accurately predicting a cancellation) were above 100 days, whereas the model’s average false positives (predicting a cancellation, but the reservation did not cancel) was below 100 days. This suggests that the model may struggle with reservations that have shorter lead times.
+
+![Lead Time Distribution by Confusion Matrix Label](/references/Error%20Analysis%20-%20Lead%20Time.png)
+
 ## 5. Side Quests
 - The purpose of this last section was to keep the side quests and dead-ends that I ran into during my project. The biggest side quests in this notebook is running baseline models on the overfitted and umbalanced data. I progressed through the each model attempting multiple iterations in attemps to fix the overfitting and "make the models less perfect".  Ultimately, when I discovered the leakage that `reservation_status` and `reservation_status_date` columns brought to my data, I discontinued this work.  However, I wanted to keep this as an appendix if you want to see the side quests and problem solving I attempted in my earlier iteration.
 
@@ -112,14 +121,11 @@ Next Steps:
 
 * `data` 
     - contains link to copy of the dataset (stored in a publicly accessible cloud storage)
-    - saved copy of aggregated / processed data as long as those are not too large (> 10 MB)
-        - clean_df
-        - cxl_by_date
-        - demand_by_date
-        - rf_fitted_search.pkl
+    - saved copy of aggregated / processed data as long as those are not too large 
 
 * `model`
     - `joblib` dump of final model(s)
+    - `joblib` dump of grid searches
 
 * `notebooks`
     - contains all final notebooks involved in the project
@@ -128,7 +134,7 @@ Next Steps:
     - contains final report, presentations which summarize the project
 
 * `references`
-    - contains papers / tutorials used in the project
+    - images used throughout the project
 
 * `src`
     - Contains the project source code (refactored from the notebooks)
