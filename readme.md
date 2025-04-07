@@ -1,33 +1,74 @@
 # Hotel Demand and Cancellation Forecast
-=========================
+======================================================================
+# Table of Contents
+1. [Project Overview](#project-overview)
+2. [Project Flow](#project-flow)
+3. [Data Loading and Exploration](#1-data-loading-and-exploration)
+4. [Preprocessing](#2-preprocessing)
+5. [Modeling](#3-modeling)
+6. [Model Evaluation](#4-model-evaluation)
+7. [Side Quests](#5-side-quests)
+8. [Next Adventures](#next-adventures)
+9. [Data Dictionary](#data-dictionary)
+10. [Repository](#repository)
+11. [Dataset](#dataset)
 
-### Executive Summary
-
-**Problem Area**<br>
-My area of interest falls in the hotel industry.  My project could help hotels maximize profit by accurately predicting daily hotel demand and cancellations. By optimizing and accurately predicting the net rooms for a given day, a hotel more optimally maximizes revenue for projected sellout days as well as efficiently staff their hotels to improve daily operations such as housekeeping.
 
 
-**The User**<br>
-If a revenue management system is able to accurately predict the room demand and room cancellations for a given day, it will help a hotel have a more optimal room strategy and help operations teams properly staff their hotels on a given day or week.
+## Project Overview:
 
+**The Problem** <br>
+In the hotel industry, a shared challenge all hotels face is selling their available rooms to maximize revenue without overselling their hotel.  Why is this a problem? A hotel has limited perishable inventory, unlike other industries (ie: retail), inventory cannot be carried over to the next day. Therefore, any rooms left unsold is lost revenue.  But you might think, why would a hotel every be in an oversold situation? Why would they sell more rooms than they actually have? Consider this, how often have you or a family member booked a hotel room but at some point, your plans changed?  Hotels need to account for that, so they sometimes need to sell more rooms than they actually have left.  If they are just reactive to a cancellation then they risk having unsold rooms.  But there is a tradeoff if they end the day oversold, depending on the hotel’s policy, they would have to refund the guest, pay for a ‘comparable hotel room’, transportation costs, and they risk damaging their reputation.
 
-**The Big Idea**<br>
-Machine Learning can utilize predictive analytics to create demand forecasts based on patterns from historical data, seasonality, and external factors like events. Hotels can then optimize pricing strategies and also better staff their operations teams based on the predictions. In my specific dataset, I want to be able to predict demand and cancellations for a given day.
+**Objective**<br>
+My goal is to utilize this dataset to develop a machine learning model to help predict if a reservation will cancel based on patterns from historical data. Another strong consideration I will be evaluating the model on is reliability and generalization. Because not all hotels are the same, it’s important that the model can perform reliably with different hotel datasets in the future.
 
+**Solution**<br>
+If a revenue management system is able to accurately predict the room cancellations for a given day, it will help a hotel have a more optimal room strategy and help operations teams properly staff their hotels on a given day or week.
 
-**The Impact**<br>
- Revenue management has become a growing need in the hotel industry. Gone are the days of simple spreadsheets to track what the “rate of the day” is. Hotel owners and general managers have progressively found the ROI to be high when investing in proper revenue management strategies deployed at their hotels. The goal of revenue management is “selling the right product to the right customer at the right time for the right price”. A revenue managers metrics of success include the following (depending on the hotel’s strategy):
-- Maximizing the Revenue Per Available Room (RevPAR). 
-- Reaching a “perfect sell”. This means not finishing the day with any rooms unsold. A hotel has limited perishable inventory. Any rooms that are left unsold receive 0 revenue. Unlike in other industries such as retail, inventory cannot be carried over the next day to be sold. The two biggest contributors to reaching a perfect sale are room demand and room cancellations.
-
+**My Motiviation**<br>
+I've worked in the hotel revenue management discipline for over 14 years. In my career, I've progressed from being an user of a revenue management (RM) system, to becoming a RM system consultant, to a RM system product owner. I continually want to learn how and why a product works. What better way continue feeding my curiosities by going under the hood and building my own machine learning model that can predict cancellations (which plays a large part of a RM system)?
 
 **The Data**<br>
 I have identified two datasets that share the same source. The Science Direct dataset was shared in 2019 and the kaggle dataset took this data and cleaned it for “#TidyTuesday” in 2020. The data contains booking information for 2 hotels, a city hotel and a resort hotel. It provides reservation information such as: booking dates, arrival dates, number of adults/children, market segment, and if the reservation was cancelled or changed.
 
 
-### Methodology<br>
-I would first start with classification models like logistic regression to predict my first target variable (is_canceled). Next I would explore additional classification models (Random Forest, XGBoost) to compare the performance of these models with the baseline logistic regression model. Next I would explore demand using time series forecasting to predict demand.  Once both the time series forecast is complete, I would encorporate both models together to predict a daily occupancy using the test set.
+# Project Flow: 
 
+My Project is organized into 4 mains sections and 1 "side quest" (Spoilers included!)
+## 1. Data Loading and Exploration
+- In this section, I load the data, clean, and begin my initial exploration to see if I can discover any insights before modeling. This was a fun challenge, taking my domain experience into EDA to see if my past experiences as a revenue management product owner would help me uncover any interesting insights.  My biggest problem here was analysis paralysis. I wanted to find more and learn more about the data before modeling!
+- However when conducting my initial exploration, I first focused on what I believed was most important, defining demand and evaluating how it compares overtime with cancellations. I quickly realized that there was not one simple solution, but there were two different paths to venture down in order to solve my goal, predicting Demand or predicting Cancellations. Demand would require time series forecasting while Cancellations would be a binary classification problem. As fun as time series forecasting would have been (the shiny object that hotels love talking about), I decided to focus on Cancellations instead.  If I could gain a deeper understanding of how cancellations could work, I could take my predictive model and add it onto a demand forecast in the future and provide a complete revenue management system to help hotels predict occupancy.  I also was excited to practice the binary classification ML workflow and evaluate the multiple models that were available to me.
+- After this decision, I explored more deeply into the total number of cancellations in this data set and found that there was a slight class imbalance. When looking at cancellations by customer type, having the domain knowledge of working with Group and Contract forecasts, they are very different and difficult to predict compared to transient. Also considering there is a very small sample of these customer types in our dataset, it was safe to drop them from our data.
+## 2. Preprocessing
+- In this section, I took the discoveries from my initial exploration of the data and make the necessary feature engineering with the goal of getting the data to a model-ready state. I addressed the customer_type feature by combining the two transient customer types and removing both Group and Contract customer types. I feature engineered a variable for length of stay which I thought would be interesting to explore if longer or shorter stay patterns influence cancellations or not. 
+- After my initial iteration of baseline modeling, I returned to preprocessing to correct leakage that caused overfitting due to the reservation_status and reservation_status_date columns. Essentially, reservation_status contains data on if the reservation would ultimately be cancelled, no showed, or checked out.  Another discovery I identified was that when the arrival_date and reservation_status_date were both included, overfitting/leakage would occur because any reservations that cancelled would have a reservation status day BEFORE the arrival_date.  Whereas any reservation that checked out, would have the opposite, the reservation_status_date would be AFTER the arrival_date.  Both of these were addressed before proceeding to the next modeling phase.
+## 3. Modeling
+- In the modeling section, I addressed the class imbalance by applying SMOTE to the training data. Side note(And prior to handling this class imbalance, my baseline models were severely overfitted and have train accuracies and precision scores of nearly 100%.  My models were too perfect...which led me to handing class imbalance.)
+- I first ran the baseline models for Logistic Regression, Random Forest, and XGBoost models. Then added hyperparameters via manual hyperparameter optimization and grid search in hopes of finding the best performing model.
+- For logistic regression, optimizing the C value did not produce significant results. When applying principal component analysis to reduce dimensionality, I noticed that the accuracy and f1-scores also did not improve.
+- For random forest, by manually optimizing hyperparameters, I was able to significantly decrease the overfitting. The train vs. test score accuracy difference decreased from 14% to less than 1%.  However, there was a 10% drop in the f1-score (with a 13% decrease in Recall). But when combining my manual optimization with grid search, I achieved a 3rd random forest model that maintained minimal overfitting and a 2% increase in f-1 score compared to my previous model run.
+- For the XGBoost model, the results of adding hyperparameters were opposite of the Random Forest models. F1-score and accuracy displayed only a 1% increase, however it also increased overfitting. This pattern of increased overfitting continued when using gridsearch to further optimize the Hyperparameters.
+## 4. Model Evaluation
+- In this section, I evaluated all the machine learning models that have been run and began narrowing them down to select just 1 model. 
+- Remembering that my primary goal is to not only have high accuracy, but the model needs to be reliable and able to perform well with different hotel datasets.  Therefore, I prioritized the lowest overfitting possible. 
+- The metrics that I evaluated were using classification reports to evaluate accuracy, precision, recall, and f-1 scores. I also reviewed ROC curves to calculate the Area under the Curve (AUC) scores for each model to evaluate the model overall. 
+- After selecting the “best” model, I continued model evaluation with a confusion matrix to identify True Positives, False Positives, True Negatives, and False Negatives. This helped identify where the model performs well and incorrectly predicts cancellations. 
+- Lastly I evaluated which features are most impactful to the model and what the model believes to be the driving factors to predicting if a reservation will cancel or not.
+## 5. Side Quests
+- The purpose of this last section was to keep the side quests and dead-ends that I ran into during my project. The biggest side quests in this notebook is running baseline models on the overfitted and umbalanced data. I progressed through the each model attempting multiple iterations in attemps to fix the overfitting and "make the models less perfect".  Ultimately, when I discovered the leakage that `reservation_status` and `reservation_status_date` columns brought to my data, I discontinued this work.  However, I wanted to keep this as an appendix if you want to see the side quests and problem solving I attempted in my earlier iteration.
+
+
+### Next Adventures:
+Next Steps:
+- I chose my first workflow to take my domain knowledge and experience working with hotel cancellation forecasts out of the equation. I chose to do this so that I could have an unbaised evaluation of a dataset first before apply my domain knowledge into the model.  Perhaps my past experience was a bias, therefore I wanted to have a true end to end experience working with a dataset to see what I could uncover.  
+    - With that in mind, my next iteration would include feature engineering and removal of some features that I truly did not believe would have any impact on predicting cancellations (such as `children`, `babies`, `meal`). 
+    - I would also use my domain knowledge and bring back features such as `reserved_room_type` and `assigned_room_type` and apply one hot encoding to those features.  My 'unbiased' approach felt that this would have created too many features, however, I believe the type of room reserved strongly plays a role in demand and may also play a role in predicting cancellations.
+- Return to feature engineering and remove stays in weekday nights and stay in weekend nights due to redundancy now that I have length of stay (los).
+- Binning length of stay (`los`) and `lead_time` into smaller groupings to reduce complexity and help the model learn better.
+- Explore Demand
+    - I feel like this is only half of the journey. I ultimately want to continue uncovering what's under the hood of a revenue management system to better understand the revenue management products I've been helping build these last 5 years as a product owner.
+    - I want to explore predicting demand using statistical time series models such as ARMA and SARIMA, however these would only focus on the target variable (demand) with no features. So I would also explore other Machine Learnings models such as Linear Regression and XGBoost as well.
 
 ### Data Dictionary
 
@@ -66,9 +107,6 @@ I would first start with classification models like logistic regression to predi
 | total_of_special_requests     | Number of special requests made by the customer (e.g. twin bed or high floor)                                                                                                                                                      |
 | reservation_status            | Reservation status, assuming one of three categories: Canceled – booking was canceled by the customer; Check-Out – customer has checked in but already departed; No-Show – customer did not check-in and did not inform the hotel
 | reservation_status_date       |  Date at which the last status was set. This variable can be   used in conjunction with the ReservationStatus to understand when was the   booking canceled or when did the customer checked-out of the hotel                      |
-
-
-### Organization
 
 #### Repository 
 
