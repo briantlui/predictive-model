@@ -143,6 +143,7 @@ Next Steps:
 * `model`
     - `joblib` dump of final model(s)
     - `joblib` dump of grid searches
+    - note: random_forest_sm model was too large and cannot be uploaded to github. However it was the baseline model and was overfitted and not used as a top performing model
 
 * `notebooks`
     - contains all final notebooks involved in the project
