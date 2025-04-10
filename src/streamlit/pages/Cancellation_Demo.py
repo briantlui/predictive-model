@@ -4,19 +4,21 @@ import pandas as pd
 import joblib
 import numpy as np
 
+st.set_page_config(layout="wide")
+
 # Hardcoded file paths
 MODEL_PATH = "../../models/trained/random_forest_sm3.pkl"  # Model Path
 DATA_PATH = "../../data/processed/X_test.joblib"  # Data path
 
 # Hardcoded columns to display
-columns_to_display = ['adr', 'los', 'lead_time']  # column names
+columns_to_display = ['adr', 'los', 'lead_time', 'arrival_month','hotel_City Hotel', 'total_of_special_requests']  # column names
 
 # Streamlit app
 st.title("Hotel Reservation Cancellation Predictor")
 
 # Sidebar: Threshold selection
 threshold = st.sidebar.slider(
-    "Select Cancellation Threshold:",
+    "Select Cancellation Threshold: \n \n (Risk Tolerance)",
     min_value=0.0,
     max_value=1.0,
     value=0.5,
@@ -76,8 +78,9 @@ try:
     predictions = (raw_predictions >= threshold).astype(int)
 
     # Add cancellation risk (%) and predictions columns to the table
-    display_data["Cancellation Confidence (%)"] = (raw_predictions * 100).round(0).astype(int)  # Convert to percentages, round to whole numbers, and format as integers
+    display_data["Cancellation Probability (%)"] = (raw_predictions * 100).round(0).astype(int)  # Convert to percentages, round to whole numbers, and format as integers
     display_data["adr"] = display_data["adr"].round(0).astype(int)  # Round 'adr' to nearest whole number and format as integers
+    
     # Convert the predictions array to a Pandas Series before replacing values
     display_data["Predicted Cancel"] = ["Yes" if pred == 1 else "No" for pred in predictions]  # Replace 1/0 with Yes/No
 
@@ -95,16 +98,20 @@ try:
     'los': 'Stay Nights',
     'adr': 'Avg Daily Rate',
     'lead_time': 'Lead Time',
-    'Cancellation Risk (%)': 'Cancellation Risk (%)',
-    'Predicted Cancellation': 'Predicted Cancellation'
+    'Cancellation Risk (%)': 'Cancellation Probability (%)',
+    'Predicted Cancellation': 'Predicted Cancellation',
+    'total_of_special_requests': 'Total Special Requests'
 })
-
+    # Reorder columns
+    desired_order = ['Predicted Cancel', 'Cancellation Probability (%)'] + [col for col in display_data.columns if col not in ['Predicted Cancel', 'Cancellation Probability (%)']]
+    display_data = display_data[desired_order]
+    
     # Limit to 100 rows
     display_data = display_data.head(100)
 
     # Show table
     st.subheader(f"Reservations for {selected_month_name} ")
-    st.dataframe(display_data)
+    st.dataframe(display_data, width=1000)
 except FileNotFoundError:
     st.error("Please ensure the model and dataset files are located at the specified paths.")
 except KeyError:
